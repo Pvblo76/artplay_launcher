@@ -5,19 +5,52 @@ workflows:
       vars:
         GRADLE_VERSION: "8.1.1"
       java: 17
-
     scripts:
       - name: Usa Gradle 8.1.1 invece di quello del progetto
         script: |
+          # Create a clean directory for Gradle
+          rm -rf gradle-temp
+          mkdir -p gradle-temp
+          cd gradle-temp
+          
+          # Download and extract Gradle
           wget https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip
           unzip -q gradle-$GRADLE_VERSION-bin.zip
+          
+          # Make gradle executable
+          chmod +x gradle-$GRADLE_VERSION/bin/gradle
+          
+          # Add to PATH and verify
           export PATH="$PWD/gradle-$GRADLE_VERSION/bin:$PATH"
+          echo "PATH is now: $PATH"
           gradle --version
+          
+          # Create a persistent PATH for subsequent scripts
+          echo "export PATH=$PWD/gradle-$GRADLE_VERSION/bin:\$PATH" >> ~/.bashrc
+          source ~/.bashrc
 
       - name: Build del progetto
         script: |
-          gradle assembleRelease --no-daemon --android-skip-build-dependency-validation
+          # Ensure PATH is set
+          export PATH=$(dirname $(which gradle 2>/dev/null || echo "")):$(pwd)/gradle-temp/gradle-$GRADLE_VERSION/bin:$PATH
+          
+          # Verify Gradle is available
+          gradle --version || (echo "Gradle not found in PATH" && exit 1)
+          
+          # Run the build
+          ./gradlew assembleDebug --no-daemon --android-skip-build-dependency-validation || gradle assembleRelease --no-daemon --android-skip-build-dependency-validation
 
     artifacts:
       - build/**/outputs/**/*.apk
       - build/**/outputs/**/*.aab
+
+  android-workflow:
+    name: Android Workflow
+    instance_type: mac_mini
+    max_build_duration: 60
+    environment:
+      flutter: stable
+    scripts:
+      - name: Build APK
+        script: |
+          flutter build apk --debug --android-skip-build-dependency-validation
