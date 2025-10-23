@@ -16,7 +16,7 @@ workflows:
 
       - name: Build del progetto
         script: |
-          gradle assembleDebug --no-daemon
+          gradle assembleRelease --no-daemon --android-skip-build-dependency-validation
 
     artifacts:
       - build/**/outputs/**/*.apk
