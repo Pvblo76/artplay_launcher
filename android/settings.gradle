@@ -22,7 +22,7 @@ plugins {
 
     // ✅ Android + Kotlin plugin versions declared here
     // ✅ Must use apply false (they are applied in app/build.gradle, not here!)
-    id "com.android.application" version "8.1.1" apply false
+    id "com.android.application" version "8.1.1" apply true
     id "org.jetbrains.kotlin.android" version "1.7.10" apply false
 }
 
