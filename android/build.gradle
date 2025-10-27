@@ -23,7 +23,7 @@ buildscript {
     }
     dependencies {
         // ✅ Android Gradle Plugin 8.1.1
-        classpath("com.android.tools.build:gradle:9.1.0")
+        classpath("com.android.tools.build:gradle:9.0.0-alpha11")
 
         // Other Gradle plugins
         classpath("de.undercouch:gradle-download-task:5.0.1")
